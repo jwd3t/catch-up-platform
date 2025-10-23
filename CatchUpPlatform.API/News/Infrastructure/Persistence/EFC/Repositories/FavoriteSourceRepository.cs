@@ -4,7 +4,7 @@ using CatchUpPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using CatchUpPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace CatchUpPlatform.API.News.Infrastructure.Repositories;
+namespace CatchUpPlatform.API.News.Infrastructure.Persistence.EFC.Repositories;
 
 /// <summary>
 /// Favorite source repository  

@@ -23,4 +23,8 @@
         <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="9.0.6"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="News\Infrastructure\Persistence\EFC\" />
+    </ItemGroup>
+
 </Project>
