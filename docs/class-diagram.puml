@@ -1,8 +1,8 @@
 @startuml
-' CatchUp Platform Class Diagram
+' CatchUp Platform Class Diagram (synced with current codebase)
 
 skinparam classAttributeIconSize 0
-' News Bounded Context
+
 package "News" {
 
   package "Interfaces.REST" {
@@ -34,38 +34,13 @@ package "News" {
     }
   }
 
-  package "Domain.Services" {
-    interface IFavoriteSourceCommandService <<domain-service>> {
-      +Handle(CreateFavoriteSourceCommand) : Task<FavoriteSource?>
-    }
-    interface IFavoriteSourceQueryService <<domain-service>> {
-      +Handle(GetAllFavoriteSourcesByNewsApiKeyQuery) : Task<IEnumerable<FavoriteSource>>
-      +Handle(GetFavoriteSourceByIdQuery) : Task<FavoriteSource?>
-      +Handle(GetFavoriteSourceByNewsApiKeyAndSourceIdQuery) : Task<FavoriteSource?>
-    }
-  }
-
-  package "Application.Internal.CommandServices" {
-    class FavoriteSourceCommandService <<service>> {
-      +Handle(CreateFavoriteSourceCommand) : Task<FavoriteSource?>
-    }
-  }
-
-  package "Application.Internal.QueryServices" {
-    class FavoriteSourceQueryService <<service>> {
-      +Handle(GetAllFavoriteSourcesByNewsApiKeyQuery) : Task<IEnumerable<FavoriteSource>>
-      +Handle(GetFavoriteSourceByIdQuery) : Task<FavoriteSource?>
-      +Handle(GetFavoriteSourceByNewsApiKeyAndSourceIdQuery) : Task<FavoriteSource?>
-    }
-  }
-
   package "Domain.Model.Aggregates" {
-    class FavoriteSource {
-      -int Id
-      -string NewsApiKey
-      -string SourceId
-      -DateTimeOffset? CreatedDate
-      -DateTimeOffset? UpdatedDate
+    class FavoriteSource <<aggregate>> {
+      +int Id
+      +string NewsApiKey
+      +string SourceId
+      +DateTimeOffset? CreatedDate
+      +DateTimeOffset? UpdatedDate
       +FavoriteSource(CreateFavoriteSourceCommand)
     }
   }
@@ -90,6 +65,17 @@ package "News" {
     }
   }
 
+  package "Domain.Services" {
+    interface IFavoriteSourceCommandService <<domain-service>> {
+      +Handle(CreateFavoriteSourceCommand) : Task<FavoriteSource?>
+    }
+    interface IFavoriteSourceQueryService <<domain-service>> {
+      +Handle(GetAllFavoriteSourcesByNewsApiKeyQuery) : Task<IEnumerable<FavoriteSource>>
+      +Handle(GetFavoriteSourceByIdQuery) : Task<FavoriteSource?>
+      +Handle(GetFavoriteSourceByNewsApiKeyAndSourceIdQuery) : Task<FavoriteSource?>
+    }
+  }
+
   package "Domain.Repositories" {
     interface IFavoriteSourceRepository <<repository>> {
       +FindByNewsApiKeyAsync(string) : Task<IEnumerable<FavoriteSource>>
@@ -97,16 +83,28 @@ package "News" {
     }
   }
 
-  package "Infrastructure.Repositories" {
-    class FavoriteSourceRepository {
+  package "Application.Internal.CommandServices" {
+    class FavoriteSourceCommandService <<service>> {
+      +Handle(CreateFavoriteSourceCommand) : Task<FavoriteSource?>
+    }
+  }
+
+  package "Application.Internal.QueryServices" {
+    class FavoriteSourceQueryService <<service>> {
+      +Handle(GetAllFavoriteSourcesByNewsApiKeyQuery) : Task<IEnumerable<FavoriteSource>>
+      +Handle(GetFavoriteSourceByIdQuery) : Task<FavoriteSource?>
+      +Handle(GetFavoriteSourceByNewsApiKeyAndSourceIdQuery) : Task<FavoriteSource?>
+    }
+  }
+
+  package "Infrastructure.Persistence.EFC.Repositories" {
+    class FavoriteSourceRepository <<repository>> {
       +FindByNewsApiKeyAsync(string) : Task<IEnumerable<FavoriteSource>>
       +FindByNewsApiKeyAndSourceIdAsync(string, string) : Task<FavoriteSource?>
     }
   }
-
 }
 
-' Shared Bounded Context
 package "Shared" {
 
   package "Domain.Repositories" {
@@ -127,17 +125,27 @@ package "Shared" {
       +OnConfiguring(DbContextOptionsBuilder) : void
       +OnModelCreating(ModelBuilder) : void
     }
+
+    package "Extensions" {
+      class ModelBuilderExtensions <<extension>> {
+        +UseSnakeCaseNamingConvention(ModelBuilder) : void
+      }
+      class StringExtensions <<extension>> {
+        +ToSnakeCase(string) : string
+        +ToPlural(string) : string
+      }
+    }
   }
 
   package "Infrastructure.Persistence.EFC.Repositories" {
-    class BaseRepository<TEntity> {
+    class BaseRepository<TEntity> <<repository>> {
       +AddAsync(TEntity) : Task
       +FindByIdAsync(int) : Task<TEntity?>
       +Update(TEntity) : void
       +Remove(TEntity) : void
       +ListAsync() : Task<IEnumerable<TEntity>>
     }
-    class UnitOfWork {
+    class UnitOfWork <<repository>> {
       +CompleteAsync() : Task
     }
   }
@@ -146,8 +154,13 @@ package "Shared" {
     class KebabCaseRouteNamingConvention <<convention>> {
       +Apply(ControllerModel) : void
     }
-  }
 
+    package "Extensions" {
+      class StringExtensions <<extension>> {
+        +ToKebabCase(string) : string
+      }
+    }
+  }
 }
 
 ' Relationships
@@ -160,29 +173,25 @@ FavoriteSourceCommandService ..|> IFavoriteSourceCommandService : implements
 FavoriteSourceQueryService ..|> IFavoriteSourceQueryService : implements
 
 FavoriteSourceCommandService --> IFavoriteSourceRepository : uses
+FavoriteSourceCommandService --> IUnitOfWork : uses
 FavoriteSourceQueryService --> IFavoriteSourceRepository : uses
 
+IFavoriteSourceRepository ..|> IBaseRepository : extends
 FavoriteSourceRepository ..|> IFavoriteSourceRepository : implements
-
-IFavoriteSourceRepository --> FavoriteSource : manages
-
-FavoriteSourceResourceFromEntityAssembler ..> FavoriteSource : reads
-FavoriteSourceResourceFromEntityAssembler --> FavoriteSourceResource : produces
-
-CreateFavoriteSourceCommandFromResourceAssembler ..> CreateFavoriteSourceResource : reads
-CreateFavoriteSourceCommandFromResourceAssembler --> CreateFavoriteSourceCommand : produces
-
-CreateFavoriteSourceCommand --> FavoriteSource : constructs
+FavoriteSourceRepository --|> BaseRepository : extends
 
 BaseRepository ..|> IBaseRepository : implements
 UnitOfWork ..|> IUnitOfWork : implements
 
-FavoriteSourceRepository ..|> IBaseRepository : implements
+IFavoriteSourceRepository --> FavoriteSource : manages
+FavoriteSourceResourceFromEntityAssembler ..> FavoriteSource : reads
+FavoriteSourceResourceFromEntityAssembler --> FavoriteSourceResource : produces
+CreateFavoriteSourceCommandFromResourceAssembler ..> CreateFavoriteSourceResource : reads
+CreateFavoriteSourceCommandFromResourceAssembler --> CreateFavoriteSourceCommand : produces
+CreateFavoriteSourceCommand --> FavoriteSource : constructs
 
-' Note about repository placement
-note bottom
-  The repository interface is in Domain.Repositories,
-  and the implementation is in Infrastructure.Repositories.
-end note
+AppDbContext --> FavoriteSource : maps
+AppDbContext ..> ModelBuilderExtensions : uses
+KebabCaseRouteNamingConvention ..> Shared.Infrastructure.Interfaces.ASP.Configuration.Extensions.StringExtensions : uses
 
 @enduml
