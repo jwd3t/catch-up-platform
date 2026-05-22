@@ -1,6 +1,5 @@
 using CatchUpPlatform.API.News.Domain.Model.Aggregates;
 using CatchUpPlatform.API.News.Domain.Model.Commands;
-using Microsoft.EntityFrameworkCore;
 
 namespace CatchUpPlatform.API.News.Domain.Services;
 
@@ -25,6 +24,6 @@ public interface IFavoriteSourceCommandService
     /// <returns>
     ///     The created FavoriteSource object, or null if a duplicate pair (NewsApiKey, SourceId) is detected.
     /// </returns>
-    /// <exception cref="DbUpdateException">Thrown if the database operation fails during persistence.</exception>
-    Task<FavoriteSource?> Handle(CreateFavoriteSourceCommand command);
+    /// <exception cref="Exception">Thrown if persistence fails while handling the command.</exception>
+    Task<FavoriteSource?> Handle(CreateFavoriteSourceCommand command, CancellationToken cancellationToken = default);
 }

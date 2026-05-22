@@ -30,10 +30,12 @@ public class FavoriteSourceCommandService(
     : IFavoriteSourceCommandService
 {
     /// <inheritdoc />
-    public async Task<FavoriteSource?> Handle(CreateFavoriteSourceCommand command)
+    public async Task<FavoriteSource?> Handle(CreateFavoriteSourceCommand command,
+        CancellationToken cancellationToken = default)
     {
         var favoriteSource =
-            await favoriteSourceRepository.FindByNewsApiKeyAndSourceIdAsync(command.NewsApiKey, command.SourceId);
+            await favoriteSourceRepository.FindByNewsApiKeyAndSourceIdAsync(command.NewsApiKey, command.SourceId,
+                cancellationToken);
         if (favoriteSource != null)
         {
             logger.LogWarning(
@@ -46,8 +48,8 @@ public class FavoriteSourceCommandService(
         favoriteSource = new FavoriteSource(command);
         try
         {
-            await favoriteSourceRepository.AddAsync(favoriteSource);
-            await unitOfWork.CompleteAsync();
+            await favoriteSourceRepository.AddAsync(favoriteSource, cancellationToken);
+            await unitOfWork.CompleteAsync(cancellationToken);
         }
         catch (DbUpdateException ex)
         {
