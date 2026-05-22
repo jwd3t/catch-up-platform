@@ -155,10 +155,15 @@ public class FavoriteSourcesController(
     [HttpGet]
     [SwaggerOperation(
         Summary = "Gets a favorite source according to parameters",
-        Description = "Gets a favorite source for given parameters",
+        Description =
+            "When only newsApiKey is provided, returns all matching favorite sources (empty array if none). " +
+            "When sourceId is also provided, returns the single matching favorite source or 404 if not found.",
         OperationId = "GetFavoriteSourceFromQuery")]
-    [SwaggerResponse(200, "Result(s) was/were found or empty list if no matches", typeof(FavoriteSourceResource))]
-    [SwaggerResponse(400, "Missing required parameter: newsApiKey")]
+    [SwaggerResponse(200, "List of favorite sources matching newsApiKey (may be empty)",
+        typeof(IEnumerable<FavoriteSourceResource>))]
+    [SwaggerResponse(200, "Single favorite source matching newsApiKey and sourceId", typeof(FavoriteSourceResource))]
+    [SwaggerResponse(400, "A required query parameter is missing or invalid")]
+    [SwaggerResponse(404, "No favorite source found for the given newsApiKey and sourceId combination")]
     public async Task<ActionResult> GetFavoriteSourceFromQuery([FromQuery] string newsApiKey,
         [FromQuery] string? sourceId = null,
         CancellationToken cancellationToken = default)
