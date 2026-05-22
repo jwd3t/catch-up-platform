@@ -1,4 +1,5 @@
 using CatchUpPlatform.API.News.Domain.Model.Aggregates;
+using CatchUpPlatform.API.News.Domain.Model.ValueObjects;
 using CatchUpPlatform.API.Shared.Domain.Repositories;
 
 namespace CatchUpPlatform.API.News.Domain.Repositories;
@@ -15,7 +16,8 @@ public interface IFavoriteSourceRepository : IBaseRepository<FavoriteSource>
     /// <returns>
     ///     An Enumerable containing the favorite source objects if found, or empty otherwise.
     /// </returns>
-    Task<IEnumerable<FavoriteSource>> FindByNewsApiKeyAsync(string newsApiKey);
+    Task<IEnumerable<FavoriteSource>> FindByNewsApiKeyAsync(NewsApiKey newsApiKey,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     ///     Find a favorite source by News API Key and Source ID
@@ -25,5 +27,6 @@ public interface IFavoriteSourceRepository : IBaseRepository<FavoriteSource>
     /// <returns>
     ///     The favorite source object if found, or null otherwise.
     /// </returns>
-    Task<FavoriteSource?> FindByNewsApiKeyAndSourceIdAsync(string newsApiKey, string sourceId);
+    Task<FavoriteSource?> FindByNewsApiKeyAndSourceIdAsync(NewsApiKey newsApiKey, SourceId sourceId,
+        CancellationToken cancellationToken = default);
 }

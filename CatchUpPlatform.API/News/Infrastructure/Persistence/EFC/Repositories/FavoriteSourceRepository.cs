@@ -1,4 +1,5 @@
 using CatchUpPlatform.API.News.Domain.Model.Aggregates;
+using CatchUpPlatform.API.News.Domain.Model.ValueObjects;
 using CatchUpPlatform.API.News.Domain.Repositories;
 using CatchUpPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using CatchUpPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
@@ -18,15 +19,20 @@ public class FavoriteSourceRepository(AppDbContext context)
     : BaseRepository<FavoriteSource>(context), IFavoriteSourceRepository
 {
     /// <inheritdoc />
-    public async Task<IEnumerable<FavoriteSource>> FindByNewsApiKeyAsync(string newsApiKey)
+    public async Task<IEnumerable<FavoriteSource>> FindByNewsApiKeyAsync(NewsApiKey newsApiKey,
+        CancellationToken cancellationToken = default)
     {
-        return await Context.Set<FavoriteSource>().Where(f => f.NewsApiKey == newsApiKey).ToListAsync();
+        return await Context.Set<FavoriteSource>()
+            .Where(f => f.NewsApiKey == newsApiKey.Value)
+            .ToListAsync(cancellationToken);
     }
 
     /// <inheritdoc />
-    public async Task<FavoriteSource?> FindByNewsApiKeyAndSourceIdAsync(string newsApiKey, string sourceId)
+    public async Task<FavoriteSource?> FindByNewsApiKeyAndSourceIdAsync(NewsApiKey newsApiKey, SourceId sourceId,
+        CancellationToken cancellationToken = default)
     {
         return await Context.Set<FavoriteSource>()
-            .FirstOrDefaultAsync(f => f.NewsApiKey == newsApiKey && f.SourceId == sourceId);
+            .FirstOrDefaultAsync(f => f.NewsApiKey == newsApiKey.Value && f.SourceId == sourceId.Value,
+                cancellationToken);
     }
 }
