@@ -6,12 +6,14 @@ using CatchUpPlatform.API.News.Domain.Services;
 namespace CatchUpPlatform.API.News.Application.Internal.QueryServices;
 
 /// <summary>
-/// Favorite source query service.
+///     Application service for querying favorite sources.
 /// </summary>
 /// <remarks>
-/// This class implements the basic operations for a favorite source query service.
+///     This service acts as the query handler for retrieving favorite sources.
+///     It supports queries by NewsApiKey, by ID, and by the composite key (NewsApiKey + SourceId).
+///     All queries delegate to the repository layer for data access.
 /// </remarks>
-/// <param name="favoriteSourceRepository">The FavoriteSourceRepository instance.</param>
+/// <param name="favoriteSourceRepository">Repository for accessing favorite source data.</param>
 public class FavoriteSourceQueryService(IFavoriteSourceRepository favoriteSourceRepository)
     : IFavoriteSourceQueryService
 {
