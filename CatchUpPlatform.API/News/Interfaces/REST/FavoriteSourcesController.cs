@@ -1,13 +1,10 @@
 using System.Net.Mime;
-using CatchUpPlatform.API.News.Domain.Model.Aggregates;
-using CatchUpPlatform.API.News.Domain.Model.Errors;
+using CatchUpPlatform.API.News.Application.Services;
 using CatchUpPlatform.API.News.Domain.Model.Queries;
 using CatchUpPlatform.API.News.Domain.Model.ValueObjects;
-using CatchUpPlatform.API.News.Domain.Services;
 using CatchUpPlatform.API.News.Interfaces.REST.Resources;
 using CatchUpPlatform.API.News.Interfaces.REST.Transform;
 using CatchUpPlatform.API.Resources;
-using CatchUpPlatform.API.Shared.Application.Patterns;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -58,36 +55,11 @@ public class FavoriteSourcesController(
             var createFavoriteSourceCommand =
                 CreateFavoriteSourceCommandFromResourceAssembler.ToCommandFromResource(resource);
             var result = await favoriteSourceCommandService.Handle(createFavoriteSourceCommand, cancellationToken);
-
-            return result switch
-            {
-                Result<FavoriteSource, CreateFavoriteSourceError>.Success success =>
-                    CreatedAtAction(nameof(GetFavoriteSourceById), new { id = success.Value.Id },
-                        FavoriteSourceResourceFromEntityAssembler.ToResourceFromEntity(success.Value)),
-
-                Result<FavoriteSource, CreateFavoriteSourceError>.Failure failure =>
-                    failure.Error switch
-                    {
-                        CreateFavoriteSourceError.DuplicateFavoriteSource =>
-                            Conflict(localizer["NewsFavoriteSourceDuplicated"].Value),
-
-                        CreateFavoriteSourceError.UnexpectedError =>
-                            Problem(
-                                title: localizer["UnexpectedServerError"].Value,
-                                detail: localizer["UnexpectedErrorCreatingFavoriteSource"].Value,
-                                statusCode: 500),
-
-                        _ => Problem(
-                            title: localizer["UnexpectedServerError"].Value,
-                            detail: localizer["UnexpectedErrorProcessingRequest"].Value,
-                            statusCode: 500)
-                    },
-
-                _ => Problem(
-                    title: localizer["UnexpectedServerError"].Value,
-                    detail: localizer["UnexpectedErrorProcessingRequest"].Value,
-                    statusCode: 500)
-            };
+            return ActionResultFromCreateFavoriteSourceResultAssembler.ToActionResultFromCreateFavoriteSourceResult(
+                result,
+                this,
+                localizer,
+                nameof(GetFavoriteSourceById));
         }
         catch (ArgumentException ex)
         {

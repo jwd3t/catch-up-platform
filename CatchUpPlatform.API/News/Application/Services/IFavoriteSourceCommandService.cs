@@ -1,9 +1,9 @@
 using CatchUpPlatform.API.News.Domain.Model.Aggregates;
 using CatchUpPlatform.API.News.Domain.Model.Commands;
-using CatchUpPlatform.API.News.Domain.Model.Errors;
+using CatchUpPlatform.API.News.Application.Errors;
 using CatchUpPlatform.API.Shared.Application.Patterns;
 
-namespace CatchUpPlatform.API.News.Domain.Services;
+namespace CatchUpPlatform.API.News.Application.Services;
 
 /// <summary>
 ///     Command service interface for favorite source operations.

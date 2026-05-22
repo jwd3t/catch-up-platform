@@ -1,7 +1,7 @@
 using CatchUpPlatform.API.News.Domain.Model.Aggregates;
+using CatchUpPlatform.API.News.Application.Services;
 using CatchUpPlatform.API.News.Domain.Model.Queries;
 using CatchUpPlatform.API.News.Domain.Repositories;
-using CatchUpPlatform.API.News.Domain.Services;
 
 namespace CatchUpPlatform.API.News.Application.Internal.QueryServices;
 

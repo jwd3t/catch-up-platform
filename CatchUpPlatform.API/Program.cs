@@ -1,7 +1,7 @@
 using CatchUpPlatform.API.News.Application.Internal.CommandServices;
 using CatchUpPlatform.API.News.Application.Internal.QueryServices;
+using CatchUpPlatform.API.News.Application.Services;
 using CatchUpPlatform.API.News.Domain.Repositories;
-using CatchUpPlatform.API.News.Domain.Services;
 using CatchUpPlatform.API.News.Infrastructure.Persistence.EFC.Repositories;
 using CatchUpPlatform.API.Resources;
 using CatchUpPlatform.API.Shared.Domain.Repositories;
