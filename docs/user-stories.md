@@ -53,7 +53,7 @@ As a frontend developer, I want to add a favorite source through the API so that
 - Scenario: Validation error
     - Given a request `POST /api/v1/favorite-sources` with missing required fields or invalid values is received
     - When the API validation fails
-    - Then the API responds with `400 Bad Request` and an error payload describing validation errors.
+    - Then the API responds with `400 Bad Request` and a localized error message describing the validation failure.
 - Scenario: Duplicate favorite
     - Given a request `POST /api/v1/favorite-sources` for a `newsApiKey` + `sourceId` combination that already exists is received
     - When the API detects the duplicate pair before persistence or during persistence confirmation
@@ -61,4 +61,4 @@ As a frontend developer, I want to add a favorite source through the API so that
 - Scenario: Unexpected server error
     - Given a request `POST /api/v1/favorite-sources` is received
     - When an unexpected error occurs during persistence
-    - Then the API responds with `500 Internal Server Error` and a ProblemDetails payload.
+    - Then the API responds with `500 Internal Server Error` and a `ProblemDetails` payload.
