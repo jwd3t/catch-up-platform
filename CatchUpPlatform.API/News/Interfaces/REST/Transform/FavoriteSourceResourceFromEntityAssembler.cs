@@ -16,5 +16,5 @@ public static class FavoriteSourceResourceFromEntityAssembler
     ///     A FavoriteSourceResource assembled from the FavoriteSource
     /// </returns>
     public static FavoriteSourceResource ToResourceFromEntity(FavoriteSource entity) =>
-        new(entity.Id, entity.NewsApiKey, entity.SourceId);
+        new(entity.Id, entity.NewsApiKey.Value, entity.SourceId.Value);
 }

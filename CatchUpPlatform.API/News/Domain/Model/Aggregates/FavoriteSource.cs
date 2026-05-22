@@ -1,4 +1,5 @@
 using CatchUpPlatform.API.News.Domain.Model.Commands;
+using CatchUpPlatform.API.News.Domain.Model.ValueObjects;
 
 namespace CatchUpPlatform.API.News.Domain.Model.Aggregates;
 
@@ -18,8 +19,8 @@ public partial class FavoriteSource
     /// </summary>
     protected FavoriteSource()
     {
-        NewsApiKey = string.Empty;
-        SourceId = string.Empty;
+        NewsApiKey = null!;
+        SourceId = null!;
     }
 
     /// <summary>
@@ -35,8 +36,8 @@ public partial class FavoriteSource
     {
         ArgumentNullException.ThrowIfNull(command);
 
-        NewsApiKey = command.NewsApiKey.Value;
-        SourceId = command.SourceId.Value;
+        NewsApiKey = command.NewsApiKey;
+        SourceId = command.SourceId;
     }
 
     /// <summary>
@@ -47,10 +48,10 @@ public partial class FavoriteSource
     /// <summary>
     ///     Gets the News API key associated with this favorite source.
     /// </summary>
-    public string NewsApiKey { get; private set; }
+    public NewsApiKey NewsApiKey { get; private set; }
     
     /// <summary>
     ///     Gets the source identifier from the News API.
     /// </summary>
-    public string SourceId { get; private set; }
+    public SourceId SourceId { get; private set; }
 }

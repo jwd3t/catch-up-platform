@@ -23,7 +23,7 @@ public class FavoriteSourceRepository(AppDbContext context)
         CancellationToken cancellationToken = default)
     {
         return await Context.Set<FavoriteSource>()
-            .Where(f => f.NewsApiKey == newsApiKey.Value)
+            .Where(f => f.NewsApiKey == newsApiKey)
             .ToListAsync(cancellationToken);
     }
 
@@ -32,7 +32,7 @@ public class FavoriteSourceRepository(AppDbContext context)
         CancellationToken cancellationToken = default)
     {
         return await Context.Set<FavoriteSource>()
-            .FirstOrDefaultAsync(f => f.NewsApiKey == newsApiKey.Value && f.SourceId == sourceId.Value,
+            .FirstOrDefaultAsync(f => f.NewsApiKey == newsApiKey && f.SourceId == sourceId,
                 cancellationToken);
     }
 }
