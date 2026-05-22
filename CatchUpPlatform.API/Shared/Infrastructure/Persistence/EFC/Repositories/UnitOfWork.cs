@@ -4,16 +4,21 @@ using CatchUpPlatform.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 namespace CatchUpPlatform.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 
 /// <summary>
-///     Unit of work implementation
+///     Unit of work implementation for coordinating database transactions.
 /// </summary>
 /// <remarks>
-///     This class implements the basic operations for a unit of work.
-///     It requires the context to be passed in the constructor.
+///     This class implements the IUnitOfWork contract and encapsulates EF Core's
+///     SaveChangesAsync method. It represents a single database transaction scope,
+///     ensuring that all pending entity changes are persisted atomically.
 /// </remarks>
-/// <see cref="IUnitOfWork" />
+/// <param name="context">The EF Core database context.</param>
 public class UnitOfWork(AppDbContext context) : IUnitOfWork
 {
     /// <inheritdoc />
+    /// <remarks>
+    ///     Persists all pending entity changes (Add, Modify, Remove) to the database
+    ///     in a single atomic transaction.
+    /// </remarks>
     public async Task CompleteAsync()
     {
         await context.SaveChangesAsync();
