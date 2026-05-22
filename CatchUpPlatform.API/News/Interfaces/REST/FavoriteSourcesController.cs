@@ -68,7 +68,6 @@ public class FavoriteSourcesController(
     public async Task<ActionResult> CreateFavoriteSource([FromBody] CreateFavoriteSourceResource resource,
         CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
 
         try
         {
