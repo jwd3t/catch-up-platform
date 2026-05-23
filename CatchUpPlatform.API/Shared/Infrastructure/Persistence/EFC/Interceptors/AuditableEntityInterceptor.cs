@@ -43,15 +43,8 @@ public sealed class AuditableEntityInterceptor : SaveChangesInterceptor
 
         foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
         {
-            if (entry.State == EntityState.Added)
-            {
-                entry.Entity.CreatedAt ??= now;
-                entry.Entity.UpdatedAt = now;
-            }
-            else if (entry.State == EntityState.Modified)
-            {
-                entry.Entity.UpdatedAt = now;
-            }
+            if (entry.State is EntityState.Added or EntityState.Modified) entry.Entity.UpdatedAt = now;
+            if (entry.State == EntityState.Added) entry.Entity.CreatedAt ??= now;
         }
     }
 }
